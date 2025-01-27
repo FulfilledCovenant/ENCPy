@@ -21,15 +21,18 @@ limiter.init_app(app)
 def index():
     result = None
     error = None
-    method = 'aes'  # Default to AES
+    method = 'aes'  # Default method
     
     if request.method == "POST":
         method = request.form.get("method", "aes")
-        text = request.form.get("text", "")
+        text = request.form.get("text", "").strip()
         action = request.form.get("action")
-        key = request.form.get("key", "")[:32]  # Limit key to 32 chars
+        key = request.form.get("key", "")[:32].strip()  # Limit key to 32 chars
 
         try:
+            if not text:
+                raise ValueError("Input text cannot be empty")
+                
             if action == "encrypt":
                 result = enc.encrypt_text(text, method, key)
             elif action == "decrypt":
