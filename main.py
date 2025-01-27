@@ -3,7 +3,10 @@ from flask_limiter import Limiter
 from flask_talisman import Talisman
 import you_sc as enc
 
-app = Flask(__name__, static_folder='.', static_url_path='')
+app = Flask(__name__,
+           static_folder='static',  
+           static_url_path='',
+           template_folder='templates')
 
 # Security headers
 Talisman(app, content_security_policy={
