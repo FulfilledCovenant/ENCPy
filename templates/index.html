@@ -1,19 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Text Encryptor</title>
+    <title>Text Encryptor Pro</title>
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <h1>Text Encryptor</h1>
-    <form method="POST">
-        <textarea name="text" placeholder="Enter text here"></textarea><br>
-        <button type="submit" name="encrypt">Encrypt</button>
-        <button type="submit" name="decrypt">Decrypt</button>
-    </form>
+    <div class="container">
+        <h1>🔒 Text Encryptor Pro</h1>
+        
+        <form method="POST">
+            <div class="form-group">
+                <select name="method" id="method">
+                    <option value="custom" {% if method == 'custom' %}selected{% endif %}>Custom Encryption</option>
+                    <option value="hex" {% if method == 'hex' %}selected{% endif %}>Hex</option>
+                    <option value="base64" {% if method == 'base64' %}selected{% endif %}>Base64</option>
+                    <option value="sha256" {% if method == 'sha256' %}selected{% endif %}>SHA-256</option>
+                </select>
+            </div>
 
-    {% if result %}
-    <h2>Result:</h2>
-    <p>{{ result }}</p>
-    {% endif %}
+            <div class="form-group">
+                <textarea name="text" placeholder="Enter text here...">{{ request.form.text }}</textarea>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" name="action" value="encrypt" class="btn-primary">Encrypt</button>
+                <button type="submit" name="action" value="decrypt" class="btn-secondary">Decrypt</button>
+                <button type="button" onclick="clearForm()" class="btn-danger">Clear</button>
+            </div>
+        </form>
+
+        {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        {% if result %}
+        <div class="result-box">
+            <button class="copy-btn" onclick="copyResult()">📋 Copy</button>
+            <h3>Result:</h3>
+            <pre id="result">{{ result }}</pre>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function copyResult() {
+            const result = document.getElementById('result').textContent;
+            navigator.clipboard.writeText(result).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+
+        function clearForm() {
+            document.querySelector('textarea').value = '';
+            document.querySelector('.result-box')?.remove();
+            document.querySelector('.error')?.remove();
+        }
+    </script>
 </body>
 </html>
