@@ -1,52 +1,57 @@
-import random
+import hashlib
+import base64
 
-def encrypt_text(text):
-    """
-    Encrypts text by converting each byte to a fixed-length decimal and hex string.
+# Original custom encryption
+def custom_encrypt(text):
+    encrypted = ""
+    for char in text.encode('utf-8'):
+        encrypted += f"{char:03d}{char:02x}"
+    return encrypted
 
-    Args:
-        text: The text to encrypt.
-
-    Returns:
-        The encrypted string.
-    """
-
-    bytecode = text.encode('utf-8')  # Convert to bytecode
-
-    encrypted_string = ""
-    for byte in bytecode:
-        # Pad decimal to 3 digits and hex to 2 digits
-        decimal_part = f"{byte:03d}"
-        hex_part = f"{byte:02x}"
-        encrypted_string += decimal_part + hex_part
-
-    return encrypted_string
-
-def decrypt_text(encrypted_text):
-    """
-    Decrypts text by parsing fixed-length segments for each byte.
-
-    Args:
-        encrypted_text: The encrypted string.
-
-    Returns:
-        The decrypted text.
-    """
-
+def custom_decrypt(text):
     byte_values = []
-    chunk_size = 5  # Each chunk is 3 decimal digits + 2 hex digits
+    for i in range(0, len(text), 5):
+        chunk = text[i:i+5]
+        byte_values.append(int(chunk[:3]))
+    return bytes(byte_values).decode('utf-8')
 
-    for i in range(0, len(encrypted_text), chunk_size):
-        chunk = encrypted_text[i:i+chunk_size]
-        # Extract the first 3 characters as the decimal part
-        if len(chunk) >= 3:
-            decimal_str = chunk[:3]
-            try:
-                byte = int(decimal_str)
-                byte_values.append(byte)
-            except ValueError:
-                # Skip invalid bytes
-                pass
+# Hex conversion
+def hex_encrypt(text):
+    return text.encode('utf-8').hex()
 
-    decrypted_bytes = bytes(byte_values)
-    return decrypted_bytes.decode('utf-8', errors='ignore')
+def hex_decrypt(text):
+    return bytes.fromhex(text).decode('utf-8')
+
+# Base64 encoding
+def base64_encrypt(text):
+    return base64.b64encode(text.encode('utf-8')).decode('utf-8')
+
+def base64_decrypt(text):
+    return base64.b64decode(text).decode('utf-8')
+
+# SHA-256 (one-way hash)
+def sha256_hash(text):
+    return hashlib.sha256(text.encode('utf-8')).hexdigest()
+
+# Unified interface
+def encrypt_text(text, method):
+    if method == 'custom':
+        return custom_encrypt(text)
+    elif method == 'hex':
+        return hex_encrypt(text)
+    elif method == 'base64':
+        return base64_encrypt(text)
+    elif method == 'sha256':
+        return sha256_hash(text)
+    raise ValueError("Invalid encryption method")
+
+def decrypt_text(text, method):
+    if method == 'custom':
+        return custom_decrypt(text)
+    elif method == 'hex':
+        return hex_decrypt(text)
+    elif method == 'base64':
+        return base64_decrypt(text)
+    elif method == 'sha256':
+        raise ValueError("SHA-256 cannot be decrypted")
+    raise ValueError("Invalid decryption method")
