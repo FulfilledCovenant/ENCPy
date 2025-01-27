@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, abort
 from flask_limiter import Limiter
 from flask_talisman import Talisman
-import your_encryption_script as enc
+import you_sc as enc
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 
