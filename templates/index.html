@@ -1,56 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ENC</title>
-    <!-- Change this line -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡 ENC</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container animate__animated animate__fadeIn">
+    <div class="container">
         <h1 class="logo">🛡 ENC</h1>
         
-        <form method="POST" class="animate__animated animate__slideInUp">
-            <!-- Method selector and textarea -->
+        <form method="POST">
             <div class="form-group">
-                <input type="password" name="key" placeholder="Encryption Key (for AES)" 
-                       class="animate__animated" id="keyInput">
+                <select name="method" id="method">
+                    <option value="custom" {% if method == 'custom' %}selected{% endif %}>Custom</option>
+                    <option value="hex" {% if method == 'hex' %}selected{% endif %}>Hexadecimal</option>
+                    <option value="base64" {% if method == 'base64' %}selected{% endif %}>Base64</option>
+                </select>
             </div>
-            
-            <!-- Buttons and result box with animations -->
+
+            <div class="form-group">
+                <textarea name="text" placeholder="Enter text here..." id="mainInput">{{ request.form.text }}</textarea>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" name="action" value="encrypt" class="btn-primary">
+                    <i class="fas fa-lock"></i> Encrypt
+                </button>
+                <button type="submit" name="action" value="decrypt" class="btn-secondary">
+                    <i class="fas fa-unlock"></i> Decrypt
+                </button>
+                <button type="button" onclick="clearForm()" class="btn-danger">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
         </form>
+
+        {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        {% if result %}
+        <div class="result-box">
+            <button class="copy-btn" onclick="copyResult()">
+                <i class="far fa-copy"></i> Copy
+            </button>
+            <h3>Result:</h3>
+            <pre id="result">{{ result }}</pre>
+        </div>
+        {% endif %}
     </div>
 
     <script>
-        // Animate elements on load
-        document.addEventListener('DOMContentLoaded', () => {
-            anime({
-                targets: '.logo',
-                translateY: [-20, 0],
-                opacity: [0, 1],
-                duration: 800,
-                easing: 'easeOutExpo'
+        function copyResult() {
+            const result = document.getElementById('result').textContent;
+            navigator.clipboard.writeText(result).then(() => {
+                alert('Copied to clipboard!');
             });
-        });
+        }
 
-        // Toggle key input visibility
-        const methodSelector = document.getElementById('method');
-        const keyInput = document.getElementById('keyInput');
-        
-        methodSelector.addEventListener('change', () => {
-            if (methodSelector.value === 'aes') {
-                keyInput.style.display = 'block';
-                anime({
-                    targets: '#keyInput',
-                    opacity: [0, 1],
-                    translateY: [-10, 0],
-                    duration: 300
-                });
-            } else {
-                keyInput.style.display = 'none';
-            }
-        });
+        function clearForm() {
+            document.getElementById('mainInput').value = '';
+            document.querySelector('.result-box')?.remove();
+            document.querySelector('.error')?.remove();
+        }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </body>
 </html>
