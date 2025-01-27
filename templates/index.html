@@ -1,62 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Text Encryptor Pro</title>
+    <title>ENC</title>
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>🔒 Text Encryptor Pro</h1>
+    <div class="container animate__animated animate__fadeIn">
+        <h1 class="logo">🛡 ENC</h1>
         
-        <form method="POST">
+        <form method="POST" class="animate__animated animate__slideInUp">
+            <!-- Method selector and textarea -->
             <div class="form-group">
-                <select name="method" id="method">
-                    <option value="custom" {% if method == 'custom' %}selected{% endif %}>Custom Encryption</option>
-                    <option value="hex" {% if method == 'hex' %}selected{% endif %}>Hex</option>
-                    <option value="base64" {% if method == 'base64' %}selected{% endif %}>Base64</option>
-                    <option value="sha256" {% if method == 'sha256' %}selected{% endif %}>SHA-256</option>
-                </select>
+                <input type="password" name="key" placeholder="Encryption Key (for AES)" 
+                       class="animate__animated" id="keyInput">
             </div>
-
-            <div class="form-group">
-                <textarea name="text" placeholder="Enter text here...">{{ request.form.text }}</textarea>
-            </div>
-
-            <div class="btn-group">
-                <button type="submit" name="action" value="encrypt" class="btn-primary">Encrypt</button>
-                <button type="submit" name="action" value="decrypt" class="btn-secondary">Decrypt</button>
-                <button type="button" onclick="clearForm()" class="btn-danger">Clear</button>
-            </div>
+            
+            <!-- Buttons and result box with animations -->
         </form>
-
-        {% if error %}
-        <div class="error">
-            {{ error }}
-        </div>
-        {% endif %}
-
-        {% if result %}
-        <div class="result-box">
-            <button class="copy-btn" onclick="copyResult()">📋 Copy</button>
-            <h3>Result:</h3>
-            <pre id="result">{{ result }}</pre>
-        </div>
-        {% endif %}
     </div>
 
     <script>
-        function copyResult() {
-            const result = document.getElementById('result').textContent;
-            navigator.clipboard.writeText(result).then(() => {
-                alert('Copied to clipboard!');
+        // Animate elements on load
+        document.addEventListener('DOMContentLoaded', () => {
+            anime({
+                targets: '.logo',
+                translateY: [-20, 0],
+                opacity: [0, 1],
+                duration: 800,
+                easing: 'easeOutExpo'
             });
-        }
+        });
 
-        function clearForm() {
-            document.querySelector('textarea').value = '';
-            document.querySelector('.result-box')?.remove();
-            document.querySelector('.error')?.remove();
-        }
+        // Toggle key input visibility
+        const methodSelector = document.getElementById('method');
+        const keyInput = document.getElementById('keyInput');
+        
+        methodSelector.addEventListener('change', () => {
+            if (methodSelector.value === 'aes') {
+                keyInput.style.display = 'block';
+                anime({
+                    targets: '#keyInput',
+                    opacity: [0, 1],
+                    translateY: [-10, 0],
+                    duration: 300
+                });
+            } else {
+                keyInput.style.display = 'none';
+            }
+        });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </body>
 </html>
