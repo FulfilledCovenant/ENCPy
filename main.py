@@ -7,7 +7,7 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 limiter = Limiter(app=app, key_func=lambda: request.remote_addr)
 
 @app.route("/", methods=["GET", "POST"])
-@limiter.limit("10 per minute")
+@limiter.limit("100 per minute")
 def index():
     result = None
     error = None
